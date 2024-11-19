@@ -2,6 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.6.13'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
     id 'java'
+    id 'checkstyle'
 }
 
 group = 'com.skiskii'
@@ -10,6 +11,19 @@ sourceCompatibility = '1.8'
 
 configurations {
     mybatisGenerator
+}
+
+def configDir = "${project.rootDir}/config" as Object
+
+checkstyle {
+    toolVersion '7.8.1'
+    configFile file("$configDir/checkstyle/checkstyle.xml")
+    configProperties.checkstyleSuppressionsPath = file("$configDir/checkstyle/suppressions.xml").absolutePath
+    ignoreFailures = true
+}
+
+checkstyleMain {
+    source ='src/main/java'
 }
 
 repositories {
