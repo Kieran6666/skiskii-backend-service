@@ -1,0 +1,135 @@
+plugins {
+    id 'org.springframework.boot' version '2.6.13'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'java'
+}
+
+group = 'com.skiskii'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+configurations {
+    mybatisGenerator
+}
+
+repositories {
+    maven { url 'https://maven.aliyun.com/nexus/content/groups/public/' }
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    // @RestController @GetMapping... Restful支持
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // 热部署
+    // 只引入此依赖无法生效，需要勾选preferences->Build, Execution, Deployment->compiler->build project automatically
+    // 在springboot启动器中add run options，选择On Update action(代码变动时)/On frame deactivation(失去焦点时)，选择更新classes and resources
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // 自定义元数据，在.properties/.yml文件中使用
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
+    // cglib动态代理
+    implementation 'cglib:cglib:3.3.0'
+
+    // springboot集成redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis:2.7.6'
+    implementation 'org.springframework.data:spring-data-redis:2.7.6'
+
+    // 本地缓存支持，For Java 11 or above, use 3.x otherwise use 2.x.
+    implementation 'com.github.ben-manes.caffeine:caffeine:2.9.3'
+
+    // lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // 数据校验框架，实际上是依赖Hibernate-Validator
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // MySQL支持
+    implementation 'mysql:mysql-connector-java'
+
+    // Mybatis支持
+    implementation "org.mybatis.spring.boot:mybatis-spring-boot-starter:2.1.2"
+
+    // Mybatis TK支持
+    implementation 'tk.mybatis:mapper-spring-boot-starter:2.1.2'
+
+    // MyBatis Generator支持
+    mybatisGenerator 'org.mybatis.generator:mybatis-generator-core:1.3.5'
+    mybatisGenerator 'mysql:mysql-connector-java'
+    mybatisGenerator 'tk.mybatis:mapper:3.4.0'
+
+    // swagger2增强版
+    implementation 'com.github.xiaoymin:knife4j-openapi2-spring-boot-starter:4.4.0'
+
+    // Alibaba FastJson
+    implementation 'com.alibaba:fastjson:1.2.58'
+
+    // 阿里云SDK
+    implementation 'com.aliyun:ecs20140526:3.1.12'
+
+    // 阿里云短信SDK
+    implementation 'com.aliyun:alibabacloud-dysmsapi20170525:2.0.23'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+
+
+// Mybatis Generator配置，注意配置文件固定为 application-dev.properties
+task mybatisGenerate  {
+    doLast {
+        def prop = new Properties()
+
+        file("src/main/resources/application-dev.properties").withInputStream { prop.load(it) }
+        println prop.getProperty("spring.application.name")
+
+        ant.properties['targetProject'] = projectDir.path
+        ant.properties['driverClass'] = prop.getProperty('spring.datasource.driver-class-name')
+        ant.properties['connectionURL'] = prop.getProperty('spring.datasource.url')
+        ant.properties['userId'] = prop.getProperty('spring.datasource.username')
+        ant.properties['password'] = prop.getProperty('spring.datasource.password')
+        ant.properties['catalogName'] = prop.getProperty('spring.datasource.catalog')
+        ant.properties['src_main_java'] = sourceSets.main.java.srcDirs[0].path
+        ant.properties['src_main_resources'] = sourceSets.main.resources.srcDirs[0].path
+        ant.properties['modelPackage'] = prop.getProperty('modelPackage')
+        ant.properties['mapperPackage'] = prop.getProperty('mapperPackage')
+        ant.properties['sqlMapperPackage'] = prop.getProperty('sqlMapperPackage')
+        ant.taskdef(
+                name: 'mbgenerator',
+                classname: 'org.mybatis.generator.ant.GeneratorAntTask',
+                classpath: configurations.mybatisGenerator.asPath
+        )
+        ant.mbgenerator(overwrite: true,
+                configfile: 'db/generatorConfig.xml', verbose: true) {
+            propertyset {
+                propertyref(name: 'targetProject')
+                propertyref(name: 'userId')
+                propertyref(name: 'driverClass')
+                propertyref(name: 'connectionURL')
+                propertyref(name: 'password')
+                propertyref(name: 'catalogName')
+                propertyref(name: 'src_main_java')
+                propertyref(name: 'src_main_resources')
+                propertyref(name: 'modelPackage')
+                propertyref(name: 'mapperPackage')
+                propertyref(name: 'sqlMapperPackage')
+            }
+        }
+    }
+}
+
+
+// compile: 为自己的项目模块添加依赖，该依赖会参与到编译构建过程，并且会打包到APK文件中，如果其它工程依赖本模块， 则会将依赖传递到其它工程中
+// compileOnly: 依赖只会添加到编译路径中，不会打包到apk中，因此只能在编译时访问，且compileOnly修饰的依赖不会传递；只在编译过程中做一些辅助类的工作，在工程中没有使用该依赖库
+// implementation: 为自己的项目模块添加依赖，该依赖会参与到编译构建过程，并且会打包到APK文件中，但该依赖不会传递给其他工程中
+// api: 为自己的项目模块添加依赖，该依赖会参与到编译构建过程，并且会打包到APK文件中，但是这个依赖是可以传递的，比如模块A依赖模块B，B依赖库C，模块B在编译时能够访问到库C，但与implementation不同的是，在模块A中库C也是可以访问的
+// runtimeOnly: 这个与compileOnly相反，它修饰的依赖不会添加到编译路径中，但是被打包到apk中，运行时使用。几乎不使用
+// annotationProcessor: 该依赖用于设置注解处理器依赖, 在APT(Annotation Processing Tool)注解处理工具中使用该依赖
+
