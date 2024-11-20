@@ -1,0 +1,26 @@
+spring:
+  profiles:
+    active:
+      dev
+  application:
+    name:
+      skiskii-backend-service
+  mvc:
+    pathmatch:
+      matching-strategy:
+        ANT_PATH_MATCHER
+
+server:
+  servlet:
+    context-path:
+      /skiskii
+
+# jasypt 加密密钥最好是放到服务器的启动文件中
+jasypt:
+  encryptor:
+    algorithm:
+      PBEWithMD5AndDES
+    iv-generator-classname:
+      'org.jasypt.iv.NoIvGenerator'
+    password:
+      96e060fa-d3a0-b694-e0de-d44dbbc689fd
