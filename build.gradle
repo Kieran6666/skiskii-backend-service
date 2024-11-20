@@ -27,16 +27,23 @@ checkstyleMain {
 }
 
 repositories {
-    maven { url 'https://maven.aliyun.com/nexus/content/groups/public/' }
+    maven { url 'https://maven.aliyun.com/repository/public/' }
+    mavenLocal()
     mavenCentral()
 }
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation ('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: "junit", module: "junit"
+    }
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.3.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
 
     // @RestController @GetMapping... Restful支持
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
     // 热部署
     // 只引入此依赖无法生效，需要勾选preferences->Build, Execution, Deployment->compiler->build project automatically
@@ -45,20 +52,6 @@ dependencies {
 
     // 自定义元数据，在.properties/.yml文件中使用
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-
-    // cglib动态代理
-    implementation 'cglib:cglib:3.3.0'
-
-    // springboot集成redis
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis:2.7.6'
-    implementation 'org.springframework.data:spring-data-redis:2.7.6'
-
-    // 本地缓存支持，For Java 11 or above, use 3.x otherwise use 2.x.
-    implementation 'com.github.ben-manes.caffeine:caffeine:2.9.3'
-
-    // lombok
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
 
     // 数据校验框架，实际上是依赖Hibernate-Validator
     implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -77,8 +70,25 @@ dependencies {
     mybatisGenerator 'mysql:mysql-connector-java'
     mybatisGenerator 'tk.mybatis:mapper:3.4.0'
 
+    // springboot集成redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis:2.7.6'
+    implementation 'org.springframework.data:spring-data-redis:2.7.6'
+
     // swagger2增强版
     implementation 'com.github.xiaoymin:knife4j-openapi2-spring-boot-starter:4.4.0'
+
+    // lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // jasypt
+    implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.4'
+
+    // cglib动态代理
+    implementation 'cglib:cglib:3.3.0'
+
+    // 本地缓存支持，For Java 11 or above, use 3.x otherwise use 2.x.
+    implementation 'com.github.ben-manes.caffeine:caffeine:2.9.3'
 
     // Alibaba FastJson
     implementation 'com.alibaba:fastjson:1.2.58'
@@ -93,8 +103,6 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
-
-
 
 // Mybatis Generator配置，注意配置文件固定为 application-dev.properties
 task mybatisGenerate  {

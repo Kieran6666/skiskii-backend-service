@@ -13,15 +13,27 @@ import lombok.Data;
 @Data
 @ApiModel("接口返回体")
 public class ApiResult<T> {
+    /**
+     * 成功标识
+     */
     @ApiModelProperty("成功标识")
     private Boolean success;
 
+    /**
+     * 错误码
+     */
     @ApiModelProperty("错误码")
     private Integer errorCode;
 
+    /**
+     * 错误消息
+     */
     @ApiModelProperty("错误消息")
     private String errorMsg;
 
+    /**
+     * 返回数据
+     */
     @ApiModelProperty("返回数据")
     private T data;
 
