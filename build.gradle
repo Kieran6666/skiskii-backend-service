@@ -1,3 +1,12 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.aliyun.com/repository/public/' }
+        mavenLocal()
+        mavenCentral()
+    }
+
+}
+
 plugins {
     id 'org.springframework.boot' version '2.6.13'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
