@@ -11,7 +11,8 @@ public class Jasypt {
     @Test
     public void generate() {
         BasicTextEncryptor encryptor = new BasicTextEncryptor();
-        encryptor.setPassword("96e060fa-d3a0-b694-e0de-d44dbbc689fd");
+        // password与application-dev.properties中的jasypt.encryptor.password保持一致
+        encryptor.setPassword("xxxxxxxx");
         String encrypt = encryptor.encrypt("123456");
         System.err.println(encrypt);
         String decrypt = encryptor.decrypt(encrypt);

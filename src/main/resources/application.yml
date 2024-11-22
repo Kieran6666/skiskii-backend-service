@@ -14,14 +14,3 @@ server:
   servlet:
     context-path:
       /skiskii
-
-# jasypt 加密密钥最好是放到服务器的启动文件中
-jasypt:
-  encryptor:
-    algorithm:
-      PBEWithMD5AndDES
-    iv-generator-classname:
-      'org.jasypt.iv.NoIvGenerator'
-    # 设置密码后，在test目录的Jasypt工具中配合该密码生成密钥，并写入配置文件ENC(jasypt-private-key)即可
-    password:
-      xxxxxxxx
