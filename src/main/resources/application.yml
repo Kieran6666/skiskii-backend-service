@@ -22,5 +22,6 @@ jasypt:
       PBEWithMD5AndDES
     iv-generator-classname:
       'org.jasypt.iv.NoIvGenerator'
+    # 设置密码后，在test目录的Jasypt工具中配合该密码生成密钥，并写入配置文件ENC(jasypt-private-key)即可
     password:
-      96e060fa-d3a0-b694-e0de-d44dbbc689fd
+      xxxxxxxx
